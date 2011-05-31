@@ -1,0 +1,13 @@
+#!/bin/sh
+
+for f in lib/*.jar; do
+    CLASSPATH=$CLASSPATH:$f
+done
+
+for f in lib/dev/*.jar; do
+    CLASSPATH=$CLASSPATH:$f
+done
+
+CLASSPATH=$CLASSPATH:"./src/"
+
+java -cp $CLASSPATH clojure.main src/qdis/server.clj $@
