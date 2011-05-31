@@ -6,9 +6,7 @@
 
 (defn initialize-connection-pool! []
   (dosync
-    (alter *jedis-pool*
-           (fn [x]
-             (JedisPool. "127.0.0.1" 6379)))))
+    (ref-set *jedis-pool* (JedisPool. "127.0.0.1" 6379))))
 
 (defn connection-pool []
   @*jedis-pool*)
