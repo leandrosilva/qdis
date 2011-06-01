@@ -14,13 +14,24 @@
       {:status 200
        :headers {"Content-Type" "application/json"
                  "Location" (str "/" queue "/:item-uuid/status")}
-       :body (str "{\"queue\":\"" queue "\", \"item-uuid\":\"000\"}")}))
+       :body (str "{\"queue\":\"" queue "\","
+                  " \"item-uuid\":\"000\"}")}))
 
   (GET "/:queue/dequeue" [queue]
-    "Not Implemented Yet")
+    (let [result (qdis.queue/get-from queue)]
+      (if (= result :queue-not-found)
+        {:status 404
+         :headers {"Content-Type" "application/json"}
+         :body (str "{\"queue\":\"" queue "\"}")}
+         
+        {:status 200
+         :headers {"Content-Type" "application/json"}
+         :body (str "{\"queue\":\"" queue "\","
+                    " \"item-uuid\":\"000\","
+                    " \"payload\":" result "}")})))
 
   (GET "/:queue/:item-uuid/status" [queue item-uuid]
-    "Not Implemented Yet")
+    "Not implemented yet")
 
   (route/resources "/")
   (route/not-found "Page not found"))
