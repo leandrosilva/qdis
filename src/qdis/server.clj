@@ -13,6 +13,9 @@
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n")))
 
+(defn load-config-for [env]
+  (load-file (str "config/" env ".clj")))
+
 (defn before-serving [config]
   (todo-list)
   (qdis.jedis/initialize-connection-pool! (:redis config))
@@ -28,7 +31,7 @@
 
 ;; boot the server by environment
 (defn boot [env]
-  (-> (load-file (str "config/" env ".clj"))
+  (-> (load-config-for env)
       (before-serving)
       (serving)
       (after-serving)))
