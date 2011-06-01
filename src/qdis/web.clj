@@ -9,8 +9,8 @@
 (defroutes main-routes
   (GET "/ping" [] "pong")
   
-  (POST "/:queue/enqueue" [queue payload]
-    (let [item-uuid (qdis.queue/put-in queue payload)]
+  (POST "/:queue/enqueue" [queue item]
+    (let [item-uuid (qdis.queue/put-in qucp eue item)]
       {:status 200
        :headers {"Content-Type" "application/json"
                  "Location" (str "/" queue "/" item-uuid "/status")}
@@ -28,7 +28,7 @@
          :headers {"Content-Type" "application/json"}
          :body (str "{\"queue\":\"" queue "\","
                     " \"item-uuid\":\"" (:item-uuid result) "\","
-                    " \"payload\":" (:item result) "}")})))
+                    " \"item\":" (:item result) "}")})))
 
   (GET "/:queue/:item-uuid/status" [queue item-uuid]
     "Not implemented yet")
