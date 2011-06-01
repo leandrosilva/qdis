@@ -10,15 +10,15 @@
   (GET "/ping" [] "pong")
   
   (POST "/:queue/enqueue" [queue payload]
-    (let [result (qdis.queue/put-in queue payload)]
+    (let [item-uuid (qdis.queue/put-in queue payload)]
       {:status 200
        :headers {"Content-Type" "application/json"
-                 "Location" (str "/" queue "/:item-uuid/status")}
+                 "Location" (str "/" queue "/" item-uuid "/status")}
        :body (str "{\"queue\":\"" queue "\","
-                  " \"item-uuid\":\"000\"}")}))
+                  " \"item-uuid\":\"" item-uuid "\"}")}))
 
   (GET "/:queue/dequeue" [queue]
-    (let [result (qdis.queue/get-from queue)]
+    (let [result (qdis.queue/get-out queue)]
       (if (= result :queue-not-found)
         {:status 404
          :headers {"Content-Type" "application/json"}
@@ -27,8 +27,8 @@
         {:status 200
          :headers {"Content-Type" "application/json"}
          :body (str "{\"queue\":\"" queue "\","
-                    " \"item-uuid\":\"000\","
-                    " \"payload\":" result "}")})))
+                    " \"item-uuid\":\"" (:item-uuid result) "\","
+                    " \"payload\":" (:item result) "}")})))
 
   (GET "/:queue/:item-uuid/status" [queue item-uuid]
     "Not implemented yet")
