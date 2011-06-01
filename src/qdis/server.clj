@@ -20,9 +20,9 @@
 (defn after-boot []
   (qdis.jedis/finalize-connection-pool!))
 
-;; boot the server by environment and configuration
-(defn boot-with [env config-file-path]
-  (let [config (load-file config-file-path)]
+;; boot the server by environment
+(defn boot-with [env]
+  (let [config (load-file (str "config/" env ".clj"))]
     (before-boot)
     (run-jetty #'qdis.web/app (:server config))
     (after-boot)))
@@ -31,18 +31,12 @@
 (defn -run [& args]
   (with-command-line args
       (str "Qdis server usage:\n"
-           "  $ ./bin/run --env ENV --config FILE\n")
-           
-      [[env    "Environment (development|ci|production)"
-               "development"]
-               
-       [config "Configuration file."
-               "config/development.clj"]
-               
+           "  $ ./bin/run --env ENV\n")
+      [[env "Environment setting (development|ci|production)" "development"]
        remaining]
        
-    (println "Starting server in" env "mode, using" config "settings")
-    (boot-with env config)))
+    (println "Starting server in" env "mode")
+    (boot-with env)))
 
 ;; runs the server
 (apply -run *command-line-args*)
