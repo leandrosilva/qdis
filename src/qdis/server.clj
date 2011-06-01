@@ -13,19 +13,25 @@
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n")))
 
-(defn before-boot []
+(defn before-serving [config]
   (todo-list)
-  (qdis.jedis/initialize-connection-pool!))
+  (qdis.jedis/initialize-connection-pool! (:redis config))
+  config)
 
-(defn after-boot []
-  (qdis.jedis/finalize-connection-pool!))
+(defn serving [config]
+  (run-jetty #'qdis.web/app (:server config))
+  config)
+
+(defn after-serving [config]
+  (qdis.jedis/finalize-connection-pool!)
+  config)
 
 ;; boot the server by environment
-(defn boot-with [env]
-  (let [config (load-file (str "config/" env ".clj"))]
-    (before-boot)
-    (run-jetty #'qdis.web/app (:server config))
-    (after-boot)))
+(defn boot [env]
+  (-> (load-file (str "config/" env ".clj"))
+      (before-serving)
+      (serving)
+      (after-serving)))
 
 ;; server entry point
 (defn -run [& args]
@@ -36,7 +42,7 @@
        remaining]
        
     (println "Starting server in" env "mode")
-    (boot-with env)))
+    (boot env)))
 
 ;; runs the server
 (apply -run *command-line-args*)
