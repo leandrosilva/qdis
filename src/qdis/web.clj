@@ -15,7 +15,13 @@
        :headers {"Content-Type" "application/json"
                  "Location" (str "/" queue "/:item-uuid/status")}
        :body (str "{\"queue\":\"" queue "\", \"item-uuid\":\"000\"}")}))
-    
+
+  (GET "/:queue/dequeue" [queue]
+    "Not Implemented Yet")
+
+  (GET "/:queue/:item-uuid/status" [queue item-uuid]
+    "Not Implemented Yet")
+
   (route/resources "/")
   (route/not-found "Page not found"))
 
