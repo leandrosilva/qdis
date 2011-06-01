@@ -11,7 +11,10 @@
   
   (POST "/:queue/enqueue" [queue payload]
     (let [result (qdis.queue/put-in queue payload)]
-      (str "{\"queue\":\"" queue "\", \"result\":\"enqueued\"}")))
+      {:status 200
+       :headers {"Content-Type" "application/json"
+                 "Location" (str "/" queue "/:item-uuid/status")}
+       :body (str "{\"queue\":\"" queue "\", \"item-uuid\":\"000\"}")}))
     
   (route/resources "/")
   (route/not-found "Page not found"))
