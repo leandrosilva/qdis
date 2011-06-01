@@ -9,7 +9,9 @@
                 "- refatorar o modulo jedis para redis\n"
                 "- encapsular as chamadas que fazem referencia ao jedis\n"
                 "- encapsular toda a api do jedis (as funcoes que eu uso, claro)\n"
-                "- criar um modulo para encapsular as configuracoes\n")))
+                "- criar um modulo para encapsular as configuracoes\n"
+                "- trabalhar o handler para ficar REST-like\n"
+                "- trabalhar o wrap-reload so em dev mode\n")))
 
 (defn before-boot []
   (todo-list)

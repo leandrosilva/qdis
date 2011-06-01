@@ -18,5 +18,5 @@
 
 (def app
   (-> (handler/site main-routes)
-      (wrap-reload '[qdis.web])
+      (wrap-reload '[qdis.web]) ; shoulb be use only in development mode
       (wrap-stacktrace)))
