@@ -10,7 +10,7 @@
   (GET "/ping" [] "pong")
   
   (POST "/:queue/enqueue" [queue item]
-    (let [item-uuid (qdis.queue/put-in qucp eue item)]
+    (let [item-uuid (qdis.queue/put-in queue item)]
       {:status 200
        :headers {"Content-Type" "application/json"
                  "Location" (str "/" queue "/" item-uuid "/status")}
