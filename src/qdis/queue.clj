@@ -2,31 +2,30 @@
   (:use qdis.jedis)
   (:import [redis.clients.jedis Jedis]))
 
-;; queue setting
-(def ^{:private true} *top-level-tag*  "qdis:")
-(def ^{:private true} *queue-set*      "qdis:queueset")
-(def ^{:private true} *queue-tag*      "queue:")
-(def ^{:private true} *queue-uuid-tag* ":uuid:")
+;; settings
 
-(defn ^{:private true} which-queue-name [queue]
-  (str *top-level-tag* *queue-tag* queue))
+(def ^{:private true} *queue-set*  "qdis:queueset")
+(def ^{:private true} *queue-uuid* "qdis:uuid")
 
-(defn ^{:private true} which-queue-uuid [queue-name]
-  (str queue-name *queue-uuid-tag*))
+(def ^{:private true} *qdis-tag*  "qdis:")
+(def ^{:private true} *queue-tag* "queue:")
+(def ^{:private true} *uuid-tag*  ":uuid:")
 
-(defn ^{:private true} which-item-uuid [queue-uuid uuid]
-  (str queue-uuid uuid))
+(defn ^{:private true} which-queue-name-for [queue]
+  (str *qdis-tag* *queue-tag* queue))
+
+(defn ^{:private true} which-item-uuid-for [queue-name uuid]
+  (str queue-name *uuid-tag* uuid))
   
 ;; api
 
 (defn enqueue [queue item]
   (let [jedis (qdis.jedis/connect)]
-    (let [queue-name (which-queue-name queue)]
+    (let [queue-name (which-queue-name-for queue)]
       ;; create the queue (if it doesn't exists)
       (.sadd jedis *queue-set* queue-name)
       ;; get a uuid to received item
-      (let [item-uuid (let [queue-uuid (which-queue-uuid queue-name)]
-                        (which-item-uuid queue-uuid (.incr jedis queue-uuid)))]
+      (let [item-uuid (which-item-uuid-for queue-name (.incr jedis *queue-uuid*))]
         ;; bind this uuid to item's value
         (.set jedis item-uuid item)
         ;; and finally push item's uuid to queue
@@ -37,7 +36,7 @@
 
 (defn dequeue [queue]
   (let [jedis (qdis.jedis/connect)]
-    (let [result (let [queue-name (which-queue-name queue)]
+    (let [result (let [queue-name (which-queue-name-for queue)]
                    ;; get item's uuid from queue
                    (let [item-uuid (.rpop jedis queue-name)]
                      (if (nil? item-uuid)
