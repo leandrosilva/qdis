@@ -26,7 +26,7 @@
 (defmacro with-jedis [& exprs]
   `(do
      (binding [jedis (connect)]
-       (let [result# (do ~@exprs)]
+       (let [result# ~@exprs]
          (disconnect jedis)
          result#))))
 
