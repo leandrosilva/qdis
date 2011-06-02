@@ -4,9 +4,9 @@
 ;; use a jedis connection pool to be thread safe
 (def ^{:private true} *jedis-pool* (ref nil))
 
-(defn initialize-connection-pool! [redis]
+(defn initialize-connection-pool! [redis-config]
   (dosync
-    (ref-set *jedis-pool* (JedisPool. (:host redis) (:port redis)))))
+    (ref-set *jedis-pool* (JedisPool. (:host redis-config) (:port redis-config)))))
 
 (defn connection-pool []
   @*jedis-pool*)
@@ -21,3 +21,14 @@
 
 (defn disconnect [jedis]
   (.returnResource (qdis.jedis/connection-pool) jedis))
+
+(def *jedis*)
+
+(defmacro with-jedis [& exprs]
+  `(do
+     (binding [*jedis* (connect)]
+       (do ~@exprs)
+       (disconnect *jedis*))))
+
+(defn set- [key value]
+  (.set *jedis* key value))
