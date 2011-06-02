@@ -27,8 +27,27 @@
 (defmacro with-jedis [& exprs]
   `(do
      (binding [*jedis* (connect)]
-       (do ~@exprs)
-       (disconnect *jedis*))))
+       (let [result# (do ~@exprs)]
+         (disconnect *jedis*)
+         result#))))
 
 (defn set- [key value]
   (.set *jedis* key value))
+
+(defn get- [key]
+  (.get *jedis* key))
+
+(defn del- [key]
+  (.del *jedis* (into-array [key])))
+
+(defn sadd- [set value]
+  (.sadd *jedis* set value))
+
+(defn incr- [uuid]
+  (.incr *jedis* uuid))
+
+(defn lpush- [list value]
+  (.lpush *jedis* list value))
+
+(defn rpop- [list]
+  (.rpop *jedis* list))

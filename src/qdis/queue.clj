@@ -20,35 +20,33 @@
 ;; api
 
 (defn enqueue [queue item]
-  (let [jedis (qdis.jedis/connect)]
-    (let [queue-name (which-queue-name-for queue)]
-      ;; create the queue (if it doesn't exists)
-      (.sadd jedis *queue-set* queue-name)
-      ;; get a uuid to received item
-      (let [item-uuid (which-item-uuid-for queue-name (.incr jedis *queue-uuid*))]
-        ;; bind this uuid to item's value
-        (.set jedis item-uuid item)
-        ;; and finally push item's uuid to queue
-        (.lpush jedis queue-name item-uuid)
-        
-        (qdis.jedis/disconnect jedis)
-        item-uuid))))
+  (with-jedis
+    (do
+      (let [queue-name (which-queue-name-for queue)]
+        ;; create the queue (if it doesn't exists)
+        (qdis.jedis/sadd- *queue-set* queue-name)
+        ;; get a uuid to received item
+        (let [item-uuid (which-item-uuid-for queue-name (qdis.jedis/incr- *queue-uuid*))]
+          ;; bind this uuid to item's value
+          (qdis.jedis/set- item-uuid item)
+          ;; and finally push item's uuid to queue
+          (qdis.jedis/lpush- queue-name item-uuid)
+          item-uuid)))))
 
 (defn dequeue [queue]
-  (let [jedis (qdis.jedis/connect)]
-    (let [result (let [queue-name (which-queue-name-for queue)]
-                   ;; get item's uuid from queue
-                   (let [item-uuid (.rpop jedis queue-name)]
-                     (if (nil? item-uuid)
-                       ;; being nil, it means that this queue doesn't exists or is empty
-                       :queue-not-found-or-is-empty
-                       ;; or since queue exists, get and del the item
-                       (let [item (.get jedis item-uuid)]
-                         (.del jedis (into-array [item-uuid]))
-                         {:item-uuid item-uuid :item item}))))]
-        
-        (qdis.jedis/disconnect jedis)
-        result)))
+  (with-jedis
+    (do
+      (let [result (let [queue-name (which-queue-name-for queue)]
+                     ;; get item's uuid from queue
+                     (let [item-uuid (qdis.jedis/rpop- queue-name)]
+                       (if (nil? item-uuid)
+                         ;; being nil, it means that this queue doesn't exists or is empty
+                         :queue-not-found-or-is-empty
+                         ;; or since queue exists, get and del the item
+                         (let [item (qdis.jedis/get- item-uuid)]
+                           (qdis.jedis/del- item-uuid)
+                           {:item-uuid item-uuid :item item}))))]
+          result))))
         
 ;; tests
 
@@ -57,10 +55,6 @@
     
   (println "\n::: running test functions :::\n")
   
-  (with-jedis
-    (do
-      (qdis.jedis/set- "x" "1")))
-
   (println "TEST 1   (enqueue 'padoca' 'panguan') =" (enqueue  "padoca" "panguan"))
   (println "TEST 2   (dequeue 'padocax') ="          (dequeue "padocax"))
   (println "TEST 3   (dequeue 'padoca') ="           (dequeue "padoca"))

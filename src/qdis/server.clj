@@ -11,7 +11,8 @@
                 "- encapsular toda a api do jedis (as funcoes que eu uso, claro)\n"
                 "- criar um modulo para encapsular as configuracoes\n"
                 "- trabalhar o handler para ficar REST-like\n"
-                "- trabalhar o wrap-reload so em dev mode\n")))
+                "- trabalhar o wrap-reload so em dev mode\n"
+                "- conferir os nomes das funcoes e parametros customizados do jedis\n")))
 
 (defn load-config-for [env]
   (load-file (str "config/" env ".clj")))
