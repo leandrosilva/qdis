@@ -19,7 +19,7 @@
   
 ;; api
 
-(defn put-in [queue item]
+(defn enqueue [queue item]
   (let [jedis (qdis.jedis/connect)]
     (let [queue-name (which-queue-name queue)]
       ;; create the queue (if it doesn't exists)
@@ -35,7 +35,7 @@
         (qdis.jedis/disconnect jedis)
         item-uuid))))
 
-(defn get-out [queue]
+(defn dequeue [queue]
   (let [jedis (qdis.jedis/connect)]
     (let [result (let [queue-name (which-queue-name queue)]
                    ;; get item's uuid from queue
@@ -58,18 +58,18 @@
     
   (println "\n::: running test functions :::\n")
 
-  (println "TEST 1   (put-in  'padoca' 'panguan') =" (put-in  "padoca" "panguan"))
-  (println "TEST 2   (get-out 'padocax') ="          (get-out "padocax"))
-  (println "TEST 3   (get-out 'padoca') ="           (get-out "padoca"))
+  (println "TEST 1   (enqueue 'padoca' 'panguan') =" (enqueue  "padoca" "panguan"))
+  (println "TEST 2   (dequeue 'padocax') ="          (dequeue "padocax"))
+  (println "TEST 3   (dequeue 'padoca') ="           (dequeue "padoca"))
 
   (println)
 
-  (println "TEST 4.1 (put-in  'padoca' 'panguan1') =" (put-in  "padoca" "panguan1"))
-  (println "TEST 4.2 (put-in  'padoca' 'panguan2') =" (put-in  "padoca" "panguan2"))
-  (println "TEST 4.3 (put-in  'padoca' 'panguan3') =" (put-in  "padoca" "panguan3"))
-  (println "TEST 4.4 (get-out 'padoca') ="            (get-out "padoca"))
-  (println "TEST 4.5 (get-out 'padoca') ="            (get-out "padoca"))
-  (println "TEST 4.6 (get-out 'padoca') ="            (get-out "padoca"))
+  (println "TEST 4.1 (enqueue 'padoca' 'panguan1') =" (enqueue  "padoca" "panguan1"))
+  (println "TEST 4.2 (enqueue 'padoca' 'panguan2') =" (enqueue  "padoca" "panguan2"))
+  (println "TEST 4.3 (enqueue 'padoca' 'panguan3') =" (enqueue  "padoca" "panguan3"))
+  (println "TEST 4.4 (dequeue 'padoca') ="            (dequeue "padoca"))
+  (println "TEST 4.5 (dequeue 'padoca') ="            (dequeue "padoca"))
+  (println "TEST 4.6 (dequeue 'padoca') ="            (dequeue "padoca"))
 
   (println)
 
