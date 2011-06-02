@@ -4,7 +4,7 @@
   (:use ring.adapter.jetty)
   (:use qdis.web))
 
-(defn todo-list []
+(defn- todo-list []
   (println (str "\nTODO List:\n"
                 "- refatorar o modulo jedis para redis\n"
                 "- encapsular as chamadas que fazem referencia ao jedis\n"
@@ -17,23 +17,23 @@
                 "- refatorar para matar a funcao connection-pool\n"
                 "- multimethod, ham?\n")))
 
-(defn load-config-for [env]
+(defn- load-config-for [env]
   (load-file (str "config/" env ".clj")))
 
-(defn before-handle-http [config]
+(defn- before-handle-http [config]
   (todo-list)
   (qdis.jedis/initialize-connection-pool! (:redis config))
   config)
 
-(defn handle-http [config]
+(defn- handle-http [config]
   (run-jetty #'qdis.web/app (:server config))
   config)
 
-(defn after-handle-http [config]
+(defn- after-handle-http [config]
   (qdis.jedis/finalize-connection-pool!)
   config)
 
-(defn start-http-server [env]
+(defn- start-http-server [env]
   (-> (load-config-for env)
       (before-handle-http)
       (handle-http)
