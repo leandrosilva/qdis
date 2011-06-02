@@ -20,25 +20,24 @@
 (defn load-config-for [env]
   (load-file (str "config/" env ".clj")))
 
-(defn before-serving [config]
+(defn before-handle-http [config]
   (todo-list)
   (qdis.jedis/initialize-connection-pool! (:redis config))
   config)
 
-(defn serving [config]
+(defn handle-http [config]
   (run-jetty #'qdis.web/app (:server config))
   config)
 
-(defn after-serving [config]
+(defn after-handle-http [config]
   (qdis.jedis/finalize-connection-pool!)
   config)
 
-;; boot the server by environment
-(defn boot [env]
+(defn start-http-server [env]
   (-> (load-config-for env)
-      (before-serving)
-      (serving)
-      (after-serving)))
+      (before-handle-http)
+      (handle-http)
+      (after-handle-http)))
 
 ;; server entry point
 (defn -main [& args]
@@ -49,7 +48,7 @@
        remaining]
        
     (println "Starting server in" env "mode")
-    (boot env)))
+    (start-http-server env)))
 
 ;; runs the server
 (apply -main *command-line-args*)
