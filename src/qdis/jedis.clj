@@ -42,14 +42,14 @@
 (defn del- [key]
   (.del *jedis* (into-array [key])))
 
-(defn sadd- [set value]
-  (.sadd *jedis* set value))
+(defn sadd- [set-key value]
+  (.sadd *jedis* set-key value))
 
-(defn incr- [uuid]
-  (.incr *jedis* uuid))
+(defn incr- [key]
+  (.incr *jedis* key))
 
-(defn lpush- [list value]
-  (.lpush *jedis* list value))
+(defn lpush- [list-key value]
+  (.lpush *jedis* list-key value))
 
-(defn rpop- [list]
-  (.rpop *jedis* list))
+(defn rpop- [list-key]
+  (.rpop *jedis* list-key))
