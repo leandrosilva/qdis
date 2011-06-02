@@ -8,19 +8,16 @@
   (dosync
     (ref-set *jedis-pool* (JedisPool. (:host redis-config) (:port redis-config)))))
 
-(defn connection-pool []
-  @*jedis-pool*)
-
 (defn finalize-connection-pool! []
-  (.destroy (connection-pool)))
+  (.destroy @*jedis-pool*))
 
 (defn connect []
-  (let [jedis (.getResource (connection-pool))]
+  (let [jedis (.getResource @*jedis-pool*)]
     (.select jedis 0)
     jedis))
 
 (defn disconnect [jedis]
-  (.returnResource (qdis.jedis/connection-pool) jedis))
+  (.returnResource @*jedis-pool* jedis))
 
 ;; redis-like api
 
@@ -33,23 +30,23 @@
          (disconnect *jedis*)
          result#))))
 
-(defn set- [key value]
+(defn -set [key value]
   (.set *jedis* key value))
 
-(defn get- [key]
+(defn -get [key]
   (.get *jedis* key))
 
-(defn del- [key]
+(defn -del [key]
   (.del *jedis* (into-array [key])))
 
-(defn sadd- [set-key value]
+(defn -sadd [set-key value]
   (.sadd *jedis* set-key value))
 
-(defn incr- [key]
+(defn -incr [key]
   (.incr *jedis* key))
 
-(defn lpush- [list-key value]
+(defn -lpush [list-key value]
   (.lpush *jedis* list-key value))
 
-(defn rpop- [list-key]
+(defn -rpop [list-key]
   (.rpop *jedis* list-key))
