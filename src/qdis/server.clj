@@ -12,7 +12,9 @@
                 "- criar um modulo para encapsular as configuracoes\n"
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n"
-                "- conferir os nomes das funcoes e parametros customizados do jedis\n")))
+                "- conferir os nomes das funcoes e parametros customizados do jedis\n"
+                "- refatorar initialize-connection-pool para apenas pool\n"
+                "- refatorar para matar a funcao connection-pool\n")))
 
 (defn load-config-for [env]
   (load-file (str "config/" env ".clj")))
