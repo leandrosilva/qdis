@@ -10,7 +10,7 @@
   (GET "/ping" [] "pong")
   
   (POST "/:queue/enqueue" [queue item]
-    (let [item-uuid (qdis.queue/put-in queue item)]
+    (let [item-uuid (qdis.queue/enqueue queue item)]
       {:status 200
        :headers {"Content-Type" "application/json"
                  "Location" (str "/" queue "/" item-uuid "/status")}
@@ -18,7 +18,7 @@
                   " \"item-uuid\":\"" item-uuid "\"}")}))
 
   (GET "/:queue/dequeue" [queue]
-    (let [result (qdis.queue/get-out queue)]
+    (let [result (qdis.queue/dequeue queue)]
       (if (= result :queue-not-found-or-is-empty)
         {:status 404
          :headers {"Content-Type" "application/json"}
