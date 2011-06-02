@@ -70,6 +70,6 @@
 
   (println)
   
-  (qdis.jedis/finalize-connection-pool!))
+  (qdis.jedis/finalize-connection-pool!)
   
   :ok)
