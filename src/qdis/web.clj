@@ -8,16 +8,22 @@
 
 (defroutes main-routes
   (GET "/ping" [] "pong")
+
+  (GET "/queues" []
+    "Not implemented yet")
+
+  (GET "/queue/:queue" [queue]
+    "Not implemented yet")
   
-  (POST "/:queue/enqueue" [queue item]
+  (POST "/queue/:queue/enqueue" [queue item]
     (let [item-uuid (qdis.queue/enqueue queue item)]
       {:status 200
        :headers {"Content-Type" "application/json"
-                 "Location" (str "/" queue "/" item-uuid "/status")}
+                 "Location" (str "/queue/" queue "/" item-uuid "/status")}
        :body (str "{\"queue\":\"" queue "\","
                   " \"item-uuid\":\"" item-uuid "\"}")}))
 
-  (GET "/:queue/dequeue" [queue]
+  (GET "/queue/:queue/dequeue" [queue]
     (let [result (qdis.queue/dequeue queue)]
       (if (= result :queue-not-found-or-is-empty)
         {:status 404
