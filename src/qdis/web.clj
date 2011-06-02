@@ -19,10 +19,11 @@
 
   (GET "/:queue/dequeue" [queue]
     (let [result (qdis.queue/get-out queue)]
-      (if (= result :queue-not-found)
+      (if (= result :queue-not-found-or-is-empty)
         {:status 404
          :headers {"Content-Type" "application/json"}
-         :body (str "{\"queue\":\"" queue "\"}")}
+         :body (str "{\"queue\":\"" queue "\","
+                    " \"message\":\"Queue not found or is empty\"}")}
          
         {:status 200
          :headers {"Content-Type" "application/json"}

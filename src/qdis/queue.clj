@@ -41,8 +41,8 @@
                    ;; get item's uuid from queue
                    (let [item-uuid (.rpop jedis queue-name)]
                      (if (nil? item-uuid)
-                       ;; being null, it means that the queue does not exist
-                       :queue-not-found
+                       ;; being nil, it means that this queue doesn't exists or is empty
+                       :queue-not-found-or-is-empty
                        ;; or since queue exists, get and del the item
                        (let [item (.get jedis item-uuid)]
                          (.del jedis (into-array [item-uuid]))
