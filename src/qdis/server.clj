@@ -22,7 +22,7 @@
 
 (defn- before-handle-http [config]
   (todo-list)
-  (qdis.jedis/initialize-connection-pool! (:redis config))
+  (qdis.jedis/initialize-connection-pool (:redis config))
   config)
 
 (defn- handle-http [config]
@@ -30,7 +30,7 @@
   config)
 
 (defn- after-handle-http [config]
-  (qdis.jedis/finalize-connection-pool!)
+  (qdis.jedis/finalize-connection-pool)
   config)
 
 (defn- start-http-server [env]

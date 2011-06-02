@@ -50,7 +50,7 @@
 ;; tests
 
 (defn run-tests []
-  (qdis.jedis/initialize-connection-pool! {:host "127.0.0.1" :port 6379})
+  (qdis.jedis/initialize-connection-pool {:host "127.0.0.1" :port 6379})
 
   (println "\n::: running test functions :::\n")
 
@@ -69,6 +69,6 @@
 
   (println)
   
-  (qdis.jedis/finalize-connection-pool!)
+  (qdis.jedis/finalize-connection-pool)
   
   :ok)
