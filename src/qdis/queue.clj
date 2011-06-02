@@ -52,9 +52,9 @@
 
 (defn run-tests []
   (qdis.jedis/initialize-connection-pool! {:host "127.0.0.1" :port 6379})
-    
+
   (println "\n::: running test functions :::\n")
-  
+
   (println "TEST 1   (enqueue 'padoca' 'panguan') =" (enqueue  "padoca" "panguan"))
   (println "TEST 2   (dequeue 'padocax') ="          (dequeue "padocax"))
   (println "TEST 3   (dequeue 'padoca') ="           (dequeue "padoca"))
@@ -69,6 +69,7 @@
   (println "TEST 4.6 (dequeue 'padoca') ="            (dequeue "padoca"))
 
   (println)
-
-  (qdis.jedis/finalize-connection-pool!)
+  
+  (qdis.jedis/finalize-connection-pool!))
+  
   :ok)

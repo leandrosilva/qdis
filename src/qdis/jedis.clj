@@ -22,6 +22,8 @@
 (defn disconnect [jedis]
   (.returnResource (qdis.jedis/connection-pool) jedis))
 
+;; redis-like api
+
 (def *jedis*)
 
 (defmacro with-jedis [& exprs]
