@@ -21,32 +21,32 @@
 
 ;; redis-like api
 
-(def *jedis*)
+(def jedis)
 
 (defmacro with-jedis [& exprs]
   `(do
-     (binding [*jedis* (connect)]
+     (binding [jedis (connect)]
        (let [result# (do ~@exprs)]
-         (disconnect *jedis*)
+         (disconnect jedis)
          result#))))
 
 (defn -set [key value]
-  (.set *jedis* key value))
+  (.set jedis key value))
 
 (defn -get [key]
-  (.get *jedis* key))
+  (.get jedis key))
 
 (defn -del [key]
-  (.del *jedis* (into-array [key])))
+  (.del jedis (into-array [key])))
 
 (defn -sadd [set-key value]
-  (.sadd *jedis* set-key value))
+  (.sadd jedis set-key value))
 
 (defn -incr [key]
-  (.incr *jedis* key))
+  (.incr jedis key))
 
 (defn -lpush [list-key value]
-  (.lpush *jedis* list-key value))
+  (.lpush jedis list-key value))
 
 (defn -rpop [list-key]
-  (.rpop *jedis* list-key))
+  (.rpop jedis list-key))

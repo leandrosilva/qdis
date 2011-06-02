@@ -1,21 +1,20 @@
 (ns qdis.queue
-  (:use qdis.jedis)
-  (:import [redis.clients.jedis Jedis]))
+  (:use qdis.jedis))
 
 ;; settings
 
-(def ^{:private true} *queue-set*  "qdis:queueset")
-(def ^{:private true} *queue-uuid* "qdis:uuid")
+(def ^{:private true} queue-set  "qdis:queueset")
+(def ^{:private true} queue-uuid "qdis:uuid")
 
-(def ^{:private true} *qdis-tag*  "qdis:")
-(def ^{:private true} *queue-tag* "queue:")
-(def ^{:private true} *uuid-tag*  ":uuid:")
+(def ^{:private true} qdis-tag  "qdis:")
+(def ^{:private true} queue-tag "queue:")
+(def ^{:private true} uuid-tag  ":uuid:")
 
 (defn- which-queue-name-for [queue]
-  (str *qdis-tag* *queue-tag* queue))
+  (str qdis-tag queue-tag queue))
 
 (defn- which-item-uuid-for [queue-name uuid]
-  (str queue-name *uuid-tag* uuid))
+  (str queue-name uuid-tag uuid))
   
 ;; api
 
@@ -24,9 +23,9 @@
     (do
       (let [queue-name (which-queue-name-for queue)]
         ;; create the queue (if it doesn't exists)
-        (qdis.jedis/-sadd *queue-set* queue-name)
+        (qdis.jedis/-sadd queue-set queue-name)
         ;; get a uuid to received item
-        (let [item-uuid (which-item-uuid-for queue-name (qdis.jedis/-incr *queue-uuid*))]
+        (let [item-uuid (which-item-uuid-for queue-name (qdis.jedis/-incr queue-uuid))]
           ;; bind this uuid to item's value
           (qdis.jedis/-set item-uuid item)
           ;; and finally push item's uuid to queue
