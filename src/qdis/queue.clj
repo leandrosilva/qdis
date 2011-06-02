@@ -11,10 +11,10 @@
 (def ^{:private true} *queue-tag* "queue:")
 (def ^{:private true} *uuid-tag*  ":uuid:")
 
-(defn ^{:private true} which-queue-name-for [queue]
+(defn- which-queue-name-for [queue]
   (str *qdis-tag* *queue-tag* queue))
 
-(defn ^{:private true} which-item-uuid-for [queue-name uuid]
+(defn- which-item-uuid-for [queue-name uuid]
   (str queue-name *uuid-tag* uuid))
   
 ;; api
