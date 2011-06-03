@@ -6,17 +6,16 @@
 (def ^{:private true} queue-set  "qdis:queueset")
 (def ^{:private true} queue-uuid "qdis:uuid")
 
-(def ^{:private true} qdis-tag  "qdis:")
-(def ^{:private true} queue-tag "queue:")
-(def ^{:private true} uuid-tag  ":uuid:")
+(def ^{:private true} tag-for-queue "qdis:queue:")
+(def ^{:private true} tag-for-uuid  ":uuid:")
 
 (defn- which-queue-name-for [queue]
-  (str qdis-tag queue-tag queue))
+  (str tag-for-queue queue))
 
 (defn- which-item-uuid-for [queue-name uuid]
-  (str queue-name uuid-tag uuid))
+  (str queue-name tag-for-uuid uuid))
   
-;; api
+;; public api
 
 (defn enqueue [queue item]
   (with-jedis
