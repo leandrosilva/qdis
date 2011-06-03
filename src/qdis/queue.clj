@@ -9,6 +9,8 @@
 (def ^{:private true} tag-for-queue "qdis:queue:")
 (def ^{:private true} tag-for-uuid  ":uuid:")
 
+;; private api
+
 (defn- with-tag
   ([queue] (str tag-for-queue queue))
   ([queue uuid] (str queue tag-for-uuid uuid)))
