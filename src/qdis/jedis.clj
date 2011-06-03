@@ -30,23 +30,30 @@
          (disconnect jedis)
          result#))))
 
-(defn -set [key value]
-  (.set jedis key value))
+(defn -set
+  ([jedis* key value] (.set jedis* key value))
+  ([key value] (-set jedis key value)))
 
-(defn -get [key]
-  (.get jedis key))
+(defn -get
+  ([jedis* key] (.get jedis* key))
+  ([key] (-get jedis key)))
 
-(defn -del [key]
-  (.del jedis (into-array [key])))
+(defn -del
+  ([jedis* key] (.del jedis* (into-array [key])))
+  ([key] (-del jedis key)))
 
-(defn -sadd [set-key value]
-  (.sadd jedis set-key value))
+(defn -sadd
+  ([jedis* set-key value] (.sadd jedis* set-key value))
+  ([set-key value] (.sadd jedis set-key value)))
 
-(defn -incr [key]
-  (.incr jedis key))
+(defn -incr
+  ([jedis* key] (.incr jedis* key))
+  ([key] (.incr jedis key)))
 
-(defn -lpush [list-key value]
-  (.lpush jedis list-key value))
+(defn -lpush
+  ([jedis* list-key value] (.lpush jedis* list-key value))
+  ([list-key value] (.lpush jedis list-key value)))
 
-(defn -rpop [list-key]
-  (.rpop jedis list-key))
+(defn -rpop
+  ([jedis* list-key] (.rpop jedis* list-key))
+  ([list-key] (.rpop jedis list-key)))
