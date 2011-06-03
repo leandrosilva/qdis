@@ -13,7 +13,7 @@
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n"
                 "- conferir os nomes das funcoes e parametros customizados do jedis\n"
-                "- refatorar initialize-connection-pool para apenas pool\n"
+                "- refatorar initialize-pool para apenas pool\n"
                 "- refatorar para matar a funcao connection-pool\n"
                 "- multimethod, ham?\n")))
 
@@ -22,7 +22,7 @@
 
 (defn- before-handle-http [config]
   (todo-list)
-  (qdis.jedis/initialize-connection-pool (:redis config))
+  (qdis.jedis/initialize-pool (:redis config))
   config)
 
 (defn- handle-http [config]
@@ -30,7 +30,7 @@
   config)
 
 (defn- after-handle-http [config]
-  (qdis.jedis/finalize-connection-pool)
+  (qdis.jedis/finalize-pool)
   config)
 
 (defn- start-http-server [env]

@@ -4,11 +4,11 @@
 ;; use a jedis connection pool to be thread safe
 (def ^{:private true} *jedis-pool* (ref nil))
 
-(defn initialize-connection-pool [redis-config]
+(defn initialize-pool [redis-config]
   (dosync
     (ref-set *jedis-pool* (JedisPool. (:host redis-config) (:port redis-config)))))
 
-(defn finalize-connection-pool []
+(defn finalize-pool []
   (.destroy @*jedis-pool*))
 
 (defn connect []
