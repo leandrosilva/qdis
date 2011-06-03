@@ -1,46 +1,69 @@
 (ns qdis.queue
-  (:use qdis.jedis))
+  (:use qdis.jedis)
+  (:import java.text.SimpleDateFormat)
+  (:import java.util.Date))
 
 ;; settings
 
-(def ^{:private true} queue-set  "qdis:queueset")
-(def ^{:private true} queue-uuid "qdis:uuid")
-
-(def ^{:private true} tag-for-queue "qdis:queue:")
-(def ^{:private true} tag-for-uuid  ":uuid:")
+(def ^{:private true} queue-set     "qdis:queue-set")
+(def ^{:private true} queue-uuid    "qdis:uuid")
+(def ^{:private true} queue-history "qdis:queue-history")
 
 ;; private api
 
-(defn- with-tag
-  ([queue] (str tag-for-queue queue))
-  ([queue uuid] (str queue tag-for-uuid uuid)))
+(defn- tag-for
+  ;; tag for queue => qdis:queue:blah
+  ([queue] (str "qdis:queue:" queue))
+  ;; tag for item-uuid => qdis:queue:{foo}:uuid:{bar}
+  ([queue uuid] (str queue ":uuid:" uuid)))
+
+(defn- status-for
+  ;; tag for item's status => qdis:queue:{foo}:uuid:{bar}:status:{dig}
+  ([item-uuid status] (str item-uuid ":status:" status))
+  ;; tag for current item's status => qdis:queue:{foo}:uuid:{bar}:status
+  ([item-uuid] (str item-uuid ":status")))
+
+(defn- right-now []
+  (let [formatter (SimpleDateFormat. "MM/dd/yyyy hh:mm:ss")]
+    (.format formatter (Date.))))
 
 ;; public api
 
 (defn enqueue [queue item]
   (with-jedis
-    (let [queue-name (with-tag queue)]
+    (let [queue-name (tag-for queue)]
       ;; create the queue (if it doesn't exists)
       (qdis.jedis/-sadd queue-set queue-name)
-      ;; get a uuid to received item
-      (let [item-uuid (with-tag queue-name (qdis.jedis/-incr queue-uuid))]
+      ;; get a uuid to this new item
+      (let [item-uuid (tag-for queue-name (qdis.jedis/-incr queue-uuid))]
         ;; bind this uuid to item's value
         (qdis.jedis/-set item-uuid item)
+        ;; bind a status to item
+        (qdis.jedis/-set (status-for item-uuid) "enqueued")
+        (qdis.jedis/-set (status-for item-uuid "enqueued") (right-now))
         ;; and finally push item's uuid to queue
         (qdis.jedis/-lpush queue-name item-uuid)
+        ;; result
         item-uuid))))
 
 (defn dequeue [queue]
   (with-jedis
-    (let [result (let [queue-name (with-tag queue)]
+    (let [result (let [queue-name (tag-for queue)]
                    ;; get item's uuid from queue
                    (let [item-uuid (qdis.jedis/-rpop queue-name)]
                      (if (nil? item-uuid)
                        ;; being nil, it means that this queue doesn't exists or is empty
                        :queue-not-found-or-is-empty
-                       ;; or since queue exists, get and del the item
+                       ;; or since queue exists
                        (let [item (qdis.jedis/-get item-uuid)]
+                         ;; del item
                          (qdis.jedis/-del item-uuid)
+                         ;; bind a status to it
+                         (qdis.jedis/-set (status-for item-uuid) "dequeued")
+                         (qdis.jedis/-set (status-for item-uuid "dequeued") (right-now))
+                         ;; and finally push item in history queue
+                         (qdis.jedis/-lpush queue-history item-uuid)
+                         ;; result
                          {:item-uuid item-uuid :item item}))))]
       result)))
         
@@ -51,15 +74,15 @@
 
   (println "\n::: running test functions :::\n")
 
-  (println "TEST 1   (enqueue 'padoca' 'panguan') =" (enqueue  "padoca" "panguan"))
+  (println "TEST 1   (enqueue 'padoca' 'panguan') =" (enqueue "padoca" "panguan"))
   (println "TEST 2   (dequeue 'padocax') ="          (dequeue "padocax"))
   (println "TEST 3   (dequeue 'padoca') ="           (dequeue "padoca"))
 
   (println)
 
-  (println "TEST 4.1 (enqueue 'padoca' 'panguan1') =" (enqueue  "padoca" "panguan1"))
-  (println "TEST 4.2 (enqueue 'padoca' 'panguan2') =" (enqueue  "padoca" "panguan2"))
-  (println "TEST 4.3 (enqueue 'padoca' 'panguan3') =" (enqueue  "padoca" "panguan3"))
+  (println "TEST 4.1 (enqueue 'padoca' 'panguan1') =" (enqueue "padoca" "panguan1"))
+  (println "TEST 4.2 (enqueue 'padoca' 'panguan2') =" (enqueue "padoca" "panguan2"))
+  (println "TEST 4.3 (enqueue 'padoca' 'panguan3') =" (enqueue "padoca" "panguan3"))
   (println "TEST 4.4 (dequeue 'padoca') ="            (dequeue "padoca"))
   (println "TEST 4.5 (dequeue 'padoca') ="            (dequeue "padoca"))
   (println "TEST 4.6 (dequeue 'padoca') ="            (dequeue "padoca"))

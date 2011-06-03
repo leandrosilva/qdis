@@ -12,6 +12,9 @@
   (GET "/queues" []
     "Not implemented yet")
 
+  (GET "/queues/history" []
+    "Not implemented yet")
+
   (GET "/queue/:queue" [queue]
     "Not implemented yet")
   
