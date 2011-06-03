@@ -9,21 +9,19 @@
 (def ^{:private true} tag-for-queue "qdis:queue:")
 (def ^{:private true} tag-for-uuid  ":uuid:")
 
-(defn- which-queue-name-for [queue]
-  (str tag-for-queue queue))
+(defn- with-tag
+  ([queue] (str tag-for-queue queue))
+  ([queue uuid] (str queue tag-for-uuid uuid)))
 
-(defn- which-item-uuid-for [queue-name uuid]
-  (str queue-name tag-for-uuid uuid))
-  
 ;; public api
 
 (defn enqueue [queue item]
   (with-jedis
-    (let [queue-name (which-queue-name-for queue)]
+    (let [queue-name (with-tag queue)]
       ;; create the queue (if it doesn't exists)
       (qdis.jedis/-sadd queue-set queue-name)
       ;; get a uuid to received item
-      (let [item-uuid (which-item-uuid-for queue-name (qdis.jedis/-incr queue-uuid))]
+      (let [item-uuid (with-tag queue-name (qdis.jedis/-incr queue-uuid))]
         ;; bind this uuid to item's value
         (qdis.jedis/-set item-uuid item)
         ;; and finally push item's uuid to queue
@@ -32,7 +30,7 @@
 
 (defn dequeue [queue]
   (with-jedis
-    (let [result (let [queue-name (which-queue-name-for queue)]
+    (let [result (let [queue-name (with-tag queue)]
                    ;; get item's uuid from queue
                    (let [item-uuid (qdis.jedis/-rpop queue-name)]
                      (if (nil? item-uuid)
