@@ -21,39 +21,39 @@
 
 ;; redis-like api
 
-(def jedis)
+(def *jedis*)
 
 (defmacro with-jedis [& exprs]
   `(do
-     (binding [jedis (connect)]
+     (binding [*jedis* (connect)]
        (let [result# (do ~@exprs)]
-         (disconnect jedis)
+         (disconnect *jedis*)
          result#))))
 
 (defn -set
-  ([jedis* key value] (.set jedis* key value))
-  ([key value] (-set jedis key value)))
+ ([jedis key value] (.set jedis key value))
+ ([key value] (-set *jedis* key value)))
 
 (defn -get
-  ([jedis* key] (.get jedis* key))
-  ([key] (-get jedis key)))
+ ([jedis key] (.get jedis key))
+ ([key] (-get *jedis* key)))
 
 (defn -del
-  ([jedis* key] (.del jedis* (into-array [key])))
-  ([key] (-del jedis key)))
+ ([jedis key] (.del jedis (into-array [key])))
+ ([key] (-del *jedis* key)))
 
 (defn -sadd
-  ([jedis* set-key value] (.sadd jedis* set-key value))
-  ([set-key value] (.sadd jedis set-key value)))
+ ([jedis set-key value] (.sadd jedis set-key value))
+ ([set-key value] (.sadd *jedis* set-key value)))
 
 (defn -incr
-  ([jedis* key] (.incr jedis* key))
-  ([key] (.incr jedis key)))
+ ([jedis key] (.incr jedis key))
+ ([key] (.incr *jedis* key)))
 
 (defn -lpush
-  ([jedis* list-key value] (.lpush jedis* list-key value))
-  ([list-key value] (.lpush jedis list-key value)))
+ ([jedis list-key value] (.lpush jedis list-key value))
+ ([list-key value] (.lpush *jedis* list-key value)))
 
 (defn -rpop
-  ([jedis* list-key] (.rpop jedis* list-key))
-  ([list-key] (.rpop jedis list-key)))
+ ([jedis list-key] (.rpop jedis list-key))
+ ([list-key] (.rpop *jedis* list-key)))
