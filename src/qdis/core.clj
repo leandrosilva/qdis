@@ -1,4 +1,4 @@
-(ns qdis.server
+(ns qdis.core
   (:gen-class)
   (:use clojure.contrib.command-line)
   (:use ring.adapter.jetty)

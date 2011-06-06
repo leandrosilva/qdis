@@ -10,4 +10,4 @@ done
 
 CLASSPATH=$CLASSPATH:"./src/"
 
-java -server -cp $CLASSPATH clojure.main src/qdis/server.clj $@
+java -server -cp $CLASSPATH clojure.main src/qdis/core.clj $@
