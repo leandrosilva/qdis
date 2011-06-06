@@ -1,8 +1,7 @@
 (ns qdis.core
   (:gen-class)
   (:use clojure.contrib.command-line)
-  (:use ring.adapter.jetty)
-  (:use qdis.web.handler))
+  (:use qdis.web.server))
 
 (defn- todo-list []
   (println (str "\nTODO List:\n"
@@ -14,24 +13,20 @@
 (defn- load-config-for [env]
   (load-file (str "config/" env ".clj")))
 
-(defn- before-handle-http [config]
+(defn- before-run [config]
   (todo-list)
   (qdis.jedis/initialize-pool (:redis config))
   config)
 
-(defn- handle-http [config]
-  (run-jetty #'qdis.web.handler/app (:server config))
-  config)
-
-(defn- after-handle-http [config]
+(defn- before-shutdown [config]
   (qdis.jedis/finalize-pool)
   config)
 
-(defn- start-http-server [env]
+(defn- run [env]
   (-> (load-config-for env)
-      (before-handle-http)
-      (handle-http)
-      (after-handle-http)))
+      (before-run)
+      (qdis.web.server/start)
+      (before-shutdown)))
 
 ;; server entry point
 (defn -main [& args]
@@ -41,8 +36,8 @@
       [[env "Environment setting (development|ci|production)" "development"]
        remaining]
        
-    (println "Starting server in" env "mode")
-    (start-http-server env)))
+    (println "Running server in" env "mode")
+    (run env)))
 
 ;; runs the server
 (apply -main *command-line-args*)
