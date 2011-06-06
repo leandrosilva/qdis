@@ -1,5 +1,5 @@
-(ns qdis.queue
-  (:use qdis.jedis)
+(ns qdis.engine.queue
+  (:use qdis.engine.jedis)
   (:import java.text.SimpleDateFormat)
   (:import java.util.Date))
 
@@ -33,16 +33,16 @@
   (with-jedis
     (let [queue-name (tag-for queue)]
       ;; create the queue (if it doesn't exists)
-      (qdis.jedis/-sadd queue-set queue-name)
+      (qdis.engine.jedis/-sadd queue-set queue-name)
       ;; get a uuid to this new item
-      (let [item-uuid (tag-for queue-name (qdis.jedis/-incr queue-uuid))]
+      (let [item-uuid (tag-for queue-name (qdis.engine.jedis/-incr queue-uuid))]
         ;; bind this uuid to item's value
-        (qdis.jedis/-set item-uuid item)
+        (qdis.engine.jedis/-set item-uuid item)
         ;; bind a status to item
-        (qdis.jedis/-set (status-for item-uuid) "enqueued")
-        (qdis.jedis/-set (status-for item-uuid "enqueued") (right-now))
+        (qdis.engine.jedis/-set (status-for item-uuid) "enqueued")
+        (qdis.engine.jedis/-set (status-for item-uuid "enqueued") (right-now))
         ;; and finally push item's uuid to queue
-        (qdis.jedis/-lpush queue-name item-uuid)
+        (qdis.engine.jedis/-lpush queue-name item-uuid)
         ;; result
         item-uuid))))
 
@@ -50,19 +50,19 @@
   (with-jedis
     (let [result (let [queue-name (tag-for queue)]
                    ;; get item's uuid from queue
-                   (let [item-uuid (qdis.jedis/-rpop queue-name)]
+                   (let [item-uuid (qdis.engine.jedis/-rpop queue-name)]
                      (if (nil? item-uuid)
                        ;; being nil, it means that this queue doesn't exists or is empty
                        :queue-not-found-or-is-empty
                        ;; or since queue exists
-                       (let [item (qdis.jedis/-get item-uuid)]
+                       (let [item (qdis.engine.jedis/-get item-uuid)]
                          ;; del item
-                         (qdis.jedis/-del item-uuid)
+                         (qdis.engine.jedis/-del item-uuid)
                          ;; bind a status to it
-                         (qdis.jedis/-set (status-for item-uuid) "dequeued")
-                         (qdis.jedis/-set (status-for item-uuid "dequeued") (right-now))
+                         (qdis.engine.jedis/-set (status-for item-uuid) "dequeued")
+                         (qdis.engine.jedis/-set (status-for item-uuid "dequeued") (right-now))
                          ;; and finally push item in history queue
-                         (qdis.jedis/-lpush queue-history item-uuid)
+                         (qdis.engine.jedis/-lpush queue-history item-uuid)
                          ;; result
                          {:item-uuid item-uuid :item item}))))]
       result)))
@@ -70,7 +70,7 @@
 ;; tests
 
 (defn run-tests []
-  (qdis.jedis/initialize-pool {:host "127.0.0.1" :port 6379})
+  (qdis.engine.jedis/initialize-pool {:host "127.0.0.1" :port 6379})
 
   (println "\n::: running test functions :::\n")
 
@@ -89,6 +89,6 @@
 
   (println)
   
-  (qdis.jedis/finalize-pool)
+  (qdis.engine.jedis/finalize-pool)
   
   :ok)

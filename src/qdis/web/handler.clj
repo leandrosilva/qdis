@@ -2,7 +2,7 @@
   (:use compojure.core)
   (:use ring.middleware.reload)
   (:use ring.middleware.stacktrace)
-  (:use qdis.queue)
+  (:use qdis.engine.queue)
   (:require [compojure.route :as route]
             [compojure.handler :as handler]))
 
@@ -19,7 +19,7 @@
     "Not implemented yet")
   
   (POST "/queue/:queue/enqueue" [queue item]
-    (let [item-uuid (qdis.queue/enqueue queue item)]
+    (let [item-uuid (qdis.engine.queue/enqueue queue item)]
       {:status 200
        :headers {"Content-Type" "application/json"
                  "Location" (str "/queue/" queue "/" item-uuid "/status")}
@@ -27,7 +27,7 @@
                   " \"item-uuid\":\"" item-uuid "\"}")}))
 
   (GET "/queue/:queue/dequeue" [queue]
-    (let [result (qdis.queue/dequeue queue)]
+    (let [result (qdis.engine.queue/dequeue queue)]
       (if (= result :queue-not-found-or-is-empty)
         {:status 404
          :headers {"Content-Type" "application/json"}

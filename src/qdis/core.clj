@@ -1,6 +1,7 @@
 (ns qdis.core
   (:gen-class)
   (:use clojure.contrib.command-line)
+  (:use qdis.engine.jedis)
   (:use qdis.web.server))
 
 (defn- todo-list []
@@ -15,11 +16,11 @@
 
 (defn- before-run [config]
   (todo-list)
-  (qdis.jedis/initialize-pool (:redis config))
+  (qdis.engine.jedis/initialize-pool (:redis config))
   config)
 
 (defn- before-shutdown [config]
-  (qdis.jedis/finalize-pool)
+  (qdis.engine.jedis/finalize-pool)
   config)
 
 (defn- run [env]

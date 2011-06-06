@@ -1,4 +1,4 @@
-(ns qdis.jedis
+(ns qdis.engine.jedis
   (:import [redis.clients.jedis Jedis JedisPool]))
 
 ;; use a jedis connection pool to be thread safe
