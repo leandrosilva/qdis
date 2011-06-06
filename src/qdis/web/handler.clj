@@ -1,4 +1,4 @@
-(ns qdis.web
+(ns qdis.web.handler
   (:use compojure.core)
   (:use ring.middleware.reload)
   (:use ring.middleware.stacktrace)
@@ -48,5 +48,5 @@
 
 (def app
   (-> (handler/site main-routes)
-      (wrap-reload '[qdis.web]) ; should be use only in development mode
+      (wrap-reload '[qdis.web.handler]) ; should be use only in development mode
       (wrap-stacktrace)))

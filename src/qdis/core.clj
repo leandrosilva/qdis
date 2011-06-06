@@ -2,7 +2,7 @@
   (:gen-class)
   (:use clojure.contrib.command-line)
   (:use ring.adapter.jetty)
-  (:use qdis.web))
+  (:use qdis.web.handler))
 
 (defn- todo-list []
   (println (str "\nTODO List:\n"
@@ -20,7 +20,7 @@
   config)
 
 (defn- handle-http [config]
-  (run-jetty #'qdis.web/app (:server config))
+  (run-jetty #'qdis.web.handler/app (:server config))
   config)
 
 (defn- after-handle-http [config]
