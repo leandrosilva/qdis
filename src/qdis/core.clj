@@ -1,9 +1,10 @@
 (ns qdis.core
   (:gen-class)
   (:use clojure.contrib.command-line)
-  (:use qdis.environment)
-  (:use qdis.engine.jedis)
-  (:use qdis.web.server))
+  (:require qdis.environment)
+  (:require qdis.config)
+  (:require qdis.engine.jedis)
+  (:require qdis.web.server))
 
 (defn- todo-list []
   (println (str "\nTODO List:\n"
@@ -11,29 +12,7 @@
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n")))
 
-;; config info
-
-(defonce ^{:private true} *config-info* (ref nil))
-
-(defn config-info
-  ([] @*config-info*)
-  ([key] (key @*config-info*)))
-
 ;; boot phase
-
-(defn- setup-config-info [env]
-  (dosync
-    (ref-set *config-info* (load-file (str "config/" env ".clj"))))
-  @*config-info*)
-
-(defn- print-runtime-info [config]
-  (println "\nRuntime info:\n"
-           "- environment: [ development:" (qdis.environment/development?)
-                          ", ci:"          (qdis.environment/ci?)
-                          ", production:"  (qdis.environment/production?) "]\n"
-           "- config: [ server:" (:server config)
-                     ", redis:"  (:redis config) "]")
-  config)
 
 (defn- before-run [config]
   (todo-list)
@@ -46,7 +25,7 @@
 
 (defn- run [env]
   (-> (qdis.environment/setup env)
-      (setup-config-info)
+      (qdis.config/setup)
       (print-runtime-info)
       (before-run)
       (qdis.web.server/start)
