@@ -44,16 +44,16 @@
 
 (defn -sadd
  ([jedis set-key value] (.sadd jedis set-key value))
- ([set-key value] (.sadd *jedis* set-key value)))
+ ([set-key value] (-sadd *jedis* set-key value)))
 
 (defn -incr
  ([jedis key] (.incr jedis key))
- ([key] (.incr *jedis* key)))
+ ([key] (-incr *jedis* key)))
 
 (defn -lpush
  ([jedis list-key value] (.lpush jedis list-key value))
- ([list-key value] (.lpush *jedis* list-key value)))
+ ([list-key value] (-lpush *jedis* list-key value)))
 
 (defn -rpop
  ([jedis list-key] (.rpop jedis list-key))
- ([list-key] (.rpop *jedis* list-key)))
+ ([list-key] (-rpop *jedis* list-key)))
