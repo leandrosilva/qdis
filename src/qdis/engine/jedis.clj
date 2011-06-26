@@ -40,7 +40,7 @@
 
 (defn -del
  ([jedis key] (.del jedis (into-array [key])))
- ([key] (-del *jedis* key)))
+ ([key] (.del *jedis* (into-array [key]))))
 
 (defn -sadd
  ([jedis set-key value] (.sadd jedis set-key value))
@@ -57,3 +57,7 @@
 (defn -rpop
  ([jedis list-key] (.rpop jedis list-key))
  ([list-key] (-rpop *jedis* list-key)))
+
+(defn -smembers
+  ([jedis set-key] (.smembers jedis set-key))
+  ([set-key] (-smembers *jedis* set-key)))

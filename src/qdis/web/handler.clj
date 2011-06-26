@@ -10,7 +10,9 @@
   (GET "/ping" [] "pong")
 
   (GET "/queues" []
-    "Not implemented yet")
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body (str "{\"queues\":" (qdis.engine.queue/queues) "}")})
 
   (GET "/queues/history" []
     "Not implemented yet")

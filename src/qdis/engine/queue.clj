@@ -29,6 +29,10 @@
 
 ;; public api
 
+(defn queues []
+  (qdis.engine.jedis/with-jedis
+    (qdis.engine.jedis/-smembers queue-set)))
+
 (defn enqueue [queue item]
   (qdis.engine.jedis/with-jedis
     (let [queue-name (tag-for queue)]
@@ -41,7 +45,7 @@
         ;; bind a status to item
         (qdis.engine.jedis/-set (status-for item-uuid) "enqueued")
         (qdis.engine.jedis/-set (status-for item-uuid "enqueued") (right-now))
-        ;; and finally push item's uuid to queue
+        ;; and finqueuesy push item's uuid to queue
         (qdis.engine.jedis/-lpush queue-name item-uuid)
         ;; result
         item-uuid))))
@@ -61,7 +65,7 @@
                          ;; bind a status to it
                          (qdis.engine.jedis/-set (status-for item-uuid) "dequeued")
                          (qdis.engine.jedis/-set (status-for item-uuid "dequeued") (right-now))
-                         ;; and finally push item in history queue
+                         ;; and finqueuesy push item in history queue
                          (qdis.engine.jedis/-lpush queue-history item-uuid)
                          ;; result
                          {:item-uuid item-uuid :item item}))))]
@@ -74,9 +78,13 @@
 
   (println "\n::: running test functions :::\n")
 
-  (println "TEST 1   (enqueue 'padoca' 'panguan') =" (enqueue "padoca" "panguan"))
-  (println "TEST 2   (dequeue 'padocax') ="          (dequeue "padocax"))
-  (println "TEST 3   (dequeue 'padoca') ="           (dequeue "padoca"))
+  (println "TEST 1   (queues) ="                      (queues))
+
+  (println "\n---\n")
+
+  (println "TEST 1   (enqueue 'padoca' 'panguan') ="  (enqueue "padoca" "panguan"))
+  (println "TEST 2   (dequeue 'padocax') ="           (dequeue "padocax"))
+  (println "TEST 3   (dequeue 'padoca') ="            (dequeue "padoca"))
 
   (println)
 
