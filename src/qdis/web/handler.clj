@@ -1,4 +1,5 @@
 (ns qdis.web.handler
+  (:use [clojure.contrib.json :only (json-str)])
   (:use compojure.core)
   (:use ring.middleware.reload)
   (:use ring.middleware.stacktrace)
@@ -12,7 +13,7 @@
   (GET "/queues" []
     {:status 200
      :headers {"Content-Type" "application/json"}
-     :body (str "{\"queues\":" (qdis.engine.queue/queues) "}")})
+     :body (json-str {"queues" (qdis.engine.queue/queues)})})
 
   (GET "/queues/history" []
     "Not implemented yet")
