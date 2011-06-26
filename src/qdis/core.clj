@@ -8,8 +8,7 @@
   (println (str "\nTODO List:\n"
                 "- criar um modulo para encapsular as configuracoes\n"
                 "- trabalhar o handler para ficar REST-like\n"
-                "- trabalhar o wrap-reload so em dev mode\n"
-                "- refatorar para matar a funcao connection-pool\n")))
+                "- trabalhar o wrap-reload so em dev mode\n")))
 
 (defn- load-config-for [env]
   (load-file (str "config/" env ".clj")))
