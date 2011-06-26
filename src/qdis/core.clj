@@ -8,7 +8,7 @@
 
 (defn- todo-list []
   (println (str "\nTODO List:\n"
-                "- criar um modulo para encapsular as configuracoes\n"
+                "- estudar sobre o uso explicito de namespaces\n"
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n")))
 
@@ -26,7 +26,6 @@
 (defn- run [env]
   (-> (qdis.environment/setup env)
       (qdis.config/setup)
-      (print-runtime-info)
       (before-run)
       (qdis.web.server/start)
       (before-shutdown)))

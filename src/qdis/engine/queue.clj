@@ -1,5 +1,5 @@
 (ns qdis.engine.queue
-  (:use qdis.engine.jedis)
+  (:require qdis.engine.jedis)
   (:import java.text.SimpleDateFormat)
   (:import java.util.Date))
 
@@ -30,7 +30,7 @@
 ;; public api
 
 (defn enqueue [queue item]
-  (with-jedis
+  (qdis.engine.jedis/with-jedis
     (let [queue-name (tag-for queue)]
       ;; create the queue (if it doesn't exists)
       (qdis.engine.jedis/-sadd queue-set queue-name)
@@ -47,7 +47,7 @@
         item-uuid))))
 
 (defn dequeue [queue]
-  (with-jedis
+  (qdis.engine.jedis/with-jedis
     (let [result (let [queue-name (tag-for queue)]
                    ;; get item's uuid from queue
                    (let [item-uuid (qdis.engine.jedis/-rpop queue-name)]
