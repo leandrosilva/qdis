@@ -2,7 +2,7 @@
   (:use compojure.core)
   (:use ring.middleware.reload)
   (:use ring.middleware.stacktrace)
-  (:use qdis.engine.queue)
+  (:require qdis.engine.queue)
   (:require [compojure.route :as route]
             [compojure.handler :as handler]))
 
