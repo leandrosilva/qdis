@@ -41,6 +41,3 @@
        
     (println "Running server in" env "mode")
     (run env)))
-
-;; boot the server
-(apply -main *command-line-args*)
