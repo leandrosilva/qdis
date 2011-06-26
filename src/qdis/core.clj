@@ -10,8 +10,44 @@
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n")))
 
-(defn- setup-config-for [env]
-  (load-file (str "config/" env ".clj")))
+;; environment
+
+(defonce ^{:private true} *environment* (ref nil))
+
+(defn in-development? []
+  (= @*environment* "development"))
+
+(defn in-ci? []
+  (= @*environment* "ci"))
+
+(defn in-production? []
+  (= @*environment* "production"))
+
+;; config info
+
+(defonce ^{:private true} *config-info* (ref nil))
+
+(defn config-info
+  ([] @*config-info*)
+  ([key] (key @*config-info*)))
+
+;; boot phase
+
+(defn- setup-environment [env]
+  (dosync
+    (ref-set *environment* env))
+  @*environment*)
+
+(defn- setup-config-info [env]
+  (dosync
+    (ref-set *config-info* (load-file (str "config/" env ".clj"))))
+  @*config-info*)
+
+(defn- print-runtime-info [config]
+  (println "\nRuntime info:")
+  (println "- Environment: [ development:" (in-development?) ", ci:" (in-ci?) ", production:" (in-production?) "]")
+  (println "- Config: [ server:" (:server config) ", redis:" (:redis config) "]")
+  config)
 
 (defn- before-run [config]
   (todo-list)
@@ -23,7 +59,9 @@
   config)
 
 (defn- run [env]
-  (-> (setup-config-for env)
+  (-> (setup-environment env)
+      (setup-config-info)
+      (print-runtime-info)
       (before-run)
       (qdis.web.server/start)
       (before-shutdown)))
@@ -39,5 +77,5 @@
     (println "Running server in" env "mode")
     (run env)))
 
-;; runs the server
+;; boot the server
 (apply -main *command-line-args*)
