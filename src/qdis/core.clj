@@ -10,7 +10,7 @@
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n")))
 
-(defn- load-config-for [env]
+(defn- setup-config-for [env]
   (load-file (str "config/" env ".clj")))
 
 (defn- before-run [config]
@@ -23,7 +23,7 @@
   config)
 
 (defn- run [env]
-  (-> (load-config-for env)
+  (-> (setup-config-for env)
       (before-run)
       (qdis.web.server/start)
       (before-shutdown)))
