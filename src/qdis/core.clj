@@ -13,7 +13,7 @@
                 "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n")))
 
-;; boot phase
+;; running phase
 
 (defn- before-run [config]
   (todo-list)
