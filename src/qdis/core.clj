@@ -1,7 +1,6 @@
 (ns qdis.core
   (:gen-class)
   (:use clojure.contrib.command-line)
-  (:require qdis.environment)
   (:require qdis.config)
   (:require qdis.engine.jedis)
   (:require qdis.web.server))
@@ -25,8 +24,7 @@
   config)
 
 (defn- run [env]
-  (-> (qdis.environment/setup env)
-      (qdis.config/setup)
+  (-> (qdis.config/setup env)
       (before-run)
       (qdis.web.server/start)
       (before-shutdown)))
@@ -34,10 +32,12 @@
 ;; server entry point
 (defn -main [& args]
   (with-command-line args
-      (str "Qdis server usage:\n"
-           "  $ ./bin/run --env ENV\n")
-      [[env "Environment setting (development|test|ci|production)" "development"]
-       remaining]
+    (str "Qdis server usage:\n"
+         "  $ ./bin/run --env ENV\n")
+    [[env
+      "Environment setting (development|test|integration|production)"
+      "development"]
+     remaining]
        
     (println "Running server in" env "mode")
     (run env)))
