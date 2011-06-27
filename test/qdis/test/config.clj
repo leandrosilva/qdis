@@ -16,9 +16,9 @@
       (is (= {:host "127.0.0.1" :port 6379} (:redis info)))))
       
   (testing "which environment is it"
-    (is (= "test" (qdis.config/which))))
+    (is (= :test (qdis.config/which?))))
     
-  (testing "if is a config for a given environment"
+  (testing "if it's a config for a given environment"
     (is (= false (qdis.config/is-development?)))
     (is (= true (qdis.config/is-test?)))
     (is (= false (qdis.config/is-integration?)))

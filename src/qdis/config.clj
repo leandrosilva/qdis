@@ -6,24 +6,24 @@
 (defn setup [env]
   (dosync
     (ref-set *info* (load-file (str "config/" env ".clj")))
-    (ref-set *environment* env))
+    (ref-set *environment* (keyword env)))
   @*info*)
 
 (defn info
   ([] @*info*)
   ([key] (key @*info*)))
 
-(defn which []
+(defn which? []
   @*environment*)
 
 (defn is-development? []
-  (= @*environment* "development"))
+  (= @*environment* :development))
 
 (defn is-test? []
-  (= @*environment* "test"))
+  (= @*environment* :test))
 
 (defn is-integration? []
-  (= @*environment* "integration"))
+  (= @*environment* :integration))
 
 (defn is-production? []
-  (= @*environment* "production"))
+  (= @*environment* :production))
