@@ -10,6 +10,9 @@
 (defn development? []
   (= @*environment* "development"))
 
+(defn test? []
+  (= @*environment* "test"))
+
 (defn ci? []
   (= @*environment* "ci"))
 

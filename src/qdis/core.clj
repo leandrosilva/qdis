@@ -36,7 +36,7 @@
   (with-command-line args
       (str "Qdis server usage:\n"
            "  $ ./bin/run --env ENV\n")
-      [[env "Environment setting (development|ci|production)" "development"]
+      [[env "Environment setting (development|test|ci|production)" "development"]
        remaining]
        
     (println "Running server in" env "mode")
