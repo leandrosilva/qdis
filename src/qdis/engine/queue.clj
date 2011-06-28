@@ -17,11 +17,17 @@
   ;; tag for item-uuid => qdis:queue:{foo}:uuid:{bar}
   ([queue uuid] (str queue ":uuid:" uuid)))
 
-(defn- status-for
-  ;; tag for item's status => qdis:queue:{foo}:uuid:{bar}:status:{dig}
-  ([item-uuid status] (str item-uuid ":status:" status))
+(defn- tag-for-log [item-uuid]
+  ;; tag for log and item => qdis:queue:{foo}:uuid:{bar}:log:value
+  (str item-uuid ":log:value"))
+
+(defn- status-for [item-uuid]
   ;; tag for current item's status => qdis:queue:{foo}:uuid:{bar}:status
-  ([item-uuid] (str item-uuid ":status")))
+  (str item-uuid ":status"))
+
+(defn- status-for-log [item-uuid status]
+  ;; tag for log item's status => qdis:queue:{foo}:uuid:{bar}:log:status:{dig}
+  (str item-uuid ":log:status:" status))
 
 (defn- right-now []
   (let [formatter (SimpleDateFormat. "MM/dd/yyyy hh:mm:ss")]
@@ -40,13 +46,15 @@
       (qdis.engine.jedis/-sadd queue-names queue-name)
       ;; get a uuid to this new item
       (let [item-uuid (tag-for queue-name (qdis.engine.jedis/-incr queue-uuid))]
-        ;; bind this uuid to item's value
+        ;; bind this uuid to the item's value
         (qdis.engine.jedis/-set item-uuid item)
-        ;; bind a status to item
+        ;; bind a status to the item
         (qdis.engine.jedis/-set (status-for item-uuid) "enqueued")
-        (qdis.engine.jedis/-set (status-for item-uuid "enqueued") (right-now))
-        ;; and finally push item's uuid to queue
+        ;; push the item to the queue
         (qdis.engine.jedis/-lpush queue-name item-uuid)
+        ;; and finally log it
+        (qdis.engine.jedis/-set (tag-for-log item-uuid) item)
+        (qdis.engine.jedis/-set (status-for-log item-uuid "enqueued") (right-now))
         ;; result
         item-uuid))))
 
@@ -60,12 +68,12 @@
                        :queue-not-found-or-is-empty
                        ;; or since queue exists
                        (let [item (qdis.engine.jedis/-get item-uuid)]
-                         ;; del item
+                         ;; del the item
                          (qdis.engine.jedis/-del item-uuid)
                          ;; bind a status to it
                          (qdis.engine.jedis/-set (status-for item-uuid) "dequeued")
-                         (qdis.engine.jedis/-set (status-for item-uuid "dequeued") (right-now))
-                         ;; and finally push item in log queue
+                         ;; and finally log it
+                         (qdis.engine.jedis/-set (status-for-log item-uuid "dequeued") (right-now))
                          (qdis.engine.jedis/-lpush queue-log item-uuid)
                          ;; result
                          {:item-uuid item-uuid :item item}))))]
