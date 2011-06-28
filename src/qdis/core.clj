@@ -14,14 +14,14 @@
 
 ;; running phase
 
-(defn- before-run [config]
+(defn- before-run [config-info]
   (print-todo-list)
-  (qdis.engine.jedis/initialize-pool (:redis config))
-  config)
+  (qdis.engine.jedis/initialize-pool (:redis config-info))
+  config-info)
 
-(defn- before-shutdown [config]
+(defn- before-shutdown [config-info]
   (qdis.engine.jedis/finalize-pool)
-  config)
+  config-info)
 
 (defn- run [env]
   (-> (qdis.config/setup env)
