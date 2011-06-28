@@ -5,14 +5,14 @@
 
 ;; settings
 
-(def ^{:private true} queue-set     "qdis:queue-set")
-(def ^{:private true} queue-uuid    "qdis:uuid")
-(def ^{:private true} queue-history "qdis:queue-history")
+(def ^{:private true} queue-names "qdis:queue-names")
+(def ^{:private true} queue-uuid  "qdis:uuid")
+(def ^{:private true} queue-log   "qdis:queue-log")
 
 ;; private api
 
 (defn- tag-for
-  ;; tag for queue => qdis:queue:blah
+  ;; tag for queue => qdis:queue:{blah}
   ([queue] (str "qdis:queue:" queue))
   ;; tag for item-uuid => qdis:queue:{foo}:uuid:{bar}
   ([queue uuid] (str queue ":uuid:" uuid)))
@@ -31,13 +31,13 @@
 
 (defn queues []
   (qdis.engine.jedis/with-jedis
-    (qdis.engine.jedis/-smembers queue-set)))
+    (qdis.engine.jedis/-smembers queue-names)))
 
 (defn enqueue [queue item]
   (qdis.engine.jedis/with-jedis
     (let [queue-name (tag-for queue)]
       ;; create the queue (if it doesn't exists)
-      (qdis.engine.jedis/-sadd queue-set queue-name)
+      (qdis.engine.jedis/-sadd queue-names queue-name)
       ;; get a uuid to this new item
       (let [item-uuid (tag-for queue-name (qdis.engine.jedis/-incr queue-uuid))]
         ;; bind this uuid to item's value
@@ -65,8 +65,8 @@
                          ;; bind a status to it
                          (qdis.engine.jedis/-set (status-for item-uuid) "dequeued")
                          (qdis.engine.jedis/-set (status-for item-uuid "dequeued") (right-now))
-                         ;; and finally push item in history queue
-                         (qdis.engine.jedis/-lpush queue-history item-uuid)
+                         ;; and finally push item in log queue
+                         (qdis.engine.jedis/-lpush queue-log item-uuid)
                          ;; result
                          {:item-uuid item-uuid :item item}))))]
       result)))
