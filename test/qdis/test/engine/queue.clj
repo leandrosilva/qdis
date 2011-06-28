@@ -11,32 +11,48 @@
   (qdis.engine.jedis/with-jedis
     (qdis.engine.jedis/-select 1)
     (qdis.engine.jedis/-flushdb))
+
+  ;scenarious
   
-  (println "\n::: running test functions [qdis.test.engine.queue] :::\n")
+  (testing "there's no queues at this point"
+    (is [] (qdis.engine.queue/queues)))
 
-  (println "TEST 1   (queues) ="                      (qdis.engine.queue/queues))
+  (testing "enqueuing itens"
+    (is (= "qdis:queue:padoca:uuid:1"
+           (qdis.engine.queue/enqueue "padoca" "panguan1")))
+    (is (= "qdis:queue:padoca:uuid:2"
+           (qdis.engine.queue/enqueue "padoca" "panguan2")))
+    (is (= "qdis:queue:padoca:uuid:3"
+           (qdis.engine.queue/enqueue "padoca" "panguan3"))))
 
-  (println "\n---\n")
+  (testing "dequeuing itens"
+    (is (= {:item-uuid "qdis:queue:padoca:uuid:1", :item "panguan1"}
+           (qdis.engine.queue/dequeue "padoca")))
+    (is (= {:item-uuid "qdis:queue:padoca:uuid:2", :item "panguan2"}
+           (qdis.engine.queue/dequeue "padoca")))
+    (is (= {:item-uuid "qdis:queue:padoca:uuid:3", :item "panguan3"}
+           (qdis.engine.queue/dequeue "padoca"))))
 
-  (println "TEST 1   (enqueue 'padoca' 'panguan') ="  (qdis.engine.queue/enqueue "padoca" "panguan"))
-  (println "TEST 2   (dequeue 'padocax') ="           (qdis.engine.queue/dequeue "padocax"))
-  (println "TEST 3   (dequeue 'padoca') ="            (qdis.engine.queue/dequeue "padoca"))
+  (testing "there's one queue at this point"
+    (is ["qdis:queue:padoca"] (qdis.engine.queue/queues)))
+  
+  (testing "enqueuing itens in other queue"
+    (is (= "qdis:queue:pastelaria:uuid:4"
+           (qdis.engine.queue/enqueue "pastelaria" "tosquito1")))
+    (is (= "qdis:queue:pastelaria:uuid:5"
+           (qdis.engine.queue/enqueue "pastelaria" "tosquito2"))))
 
-  (println)
+  (testing "dequeuing itens from other queue"
+    (is (= {:item-uuid "qdis:queue:pastelaria:uuid:4", :item "tosquito1"}
+           (qdis.engine.queue/dequeue "pastelaria")))
+    (is (= {:item-uuid "qdis:queue:pastelaria:uuid:5", :item "tosquito2"}
+           (qdis.engine.queue/dequeue "pastelaria"))))
 
-  (println "TEST 4.1 (enqueue 'padoca' 'panguan1') =" (qdis.engine.queue/enqueue "padoca" "panguan1"))
-  (println "TEST 4.2 (enqueue 'padoca' 'panguan2') =" (qdis.engine.queue/enqueue "padoca" "panguan2"))
-  (println "TEST 4.3 (enqueue 'padoca' 'panguan3') =" (qdis.engine.queue/enqueue "padoca" "panguan3"))
-  (println "TEST 4.4 (dequeue 'padoca') ="            (qdis.engine.queue/dequeue "padoca"))
-  (println "TEST 4.5 (dequeue 'padoca') ="            (qdis.engine.queue/dequeue "padoca"))
-  (println "TEST 4.6 (dequeue 'padoca') ="            (qdis.engine.queue/dequeue "padoca"))
-
-  (println)
+  (testing "there's two queues at this point"
+    (is ["qdis:queue:padoca" "qdis:queue:pastelaria"] (qdis.engine.queue/queues)))
 
   ; teardown
   (qdis.engine.jedis/with-jedis
     (qdis.engine.jedis/-flushdb))
-  
-  (qdis.engine.jedis/finalize-pool)
-  
-  (is (= "temporary test" "temporary test")))
+
+  (qdis.engine.jedis/finalize-pool))
