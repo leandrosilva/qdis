@@ -30,6 +30,14 @@
          (disconnect *jedis*)
          result#))))
 
+(defn -select
+  ([jedis index] (.select jedis index))
+  ([index] (-select *jedis* index)))
+
+(defn -flushdb []
+  ([jedis] (.flushDB jedis))
+  ([] (-flushdb *jedis*)))
+
 (defn -set
  ([jedis key value] (.set jedis key value))
  ([key value] (-set *jedis* key value)))
