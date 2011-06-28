@@ -12,21 +12,21 @@
 ;; private api
 
 (defn- tag-for
-  ;; tag for queue => qdis:queue:{blah}
+  ;; tag for queue => qdis:queue:{queue}
   ([queue] (str "qdis:queue:" queue))
-  ;; tag for item-uuid => qdis:queue:{foo}:uuid:{bar}
+  ;; tag for item-uuid => qdis:queue:{queue}:uuid:{uuid}
   ([queue uuid] (str queue ":uuid:" uuid)))
 
 (defn- tag-for-log [item-uuid]
-  ;; tag for log and item => qdis:queue:{foo}:uuid:{bar}:log:value
+  ;; tag for log and item => qdis:queue:{queue}:uuid:{uuid}:log:value
   (str item-uuid ":log:value"))
 
 (defn- status-for [item-uuid]
-  ;; tag for current item's status => qdis:queue:{foo}:uuid:{bar}:status
+  ;; tag for current item's status => qdis:queue:{queue}:uuid:{uuid}:status
   (str item-uuid ":status"))
 
 (defn- status-for-log [item-uuid status]
-  ;; tag for log item's status => qdis:queue:{foo}:uuid:{bar}:log:status:{dig}
+  ;; tag for log item's status => qdis:queue:{queue}:uuid:{uuid}:log:status:{status}
   (str item-uuid ":log:status:" status))
 
 (defn- right-now []
@@ -78,3 +78,12 @@
                          ;; result
                          {:item-uuid item-uuid :item item}))))]
       result)))
+
+(defn get-status [item-uuid]
+  (qdis.engine.jedis/with-jedis
+    (let [status (qdis.engine.jedis/-get (status-for item-uuid))]
+      (if (nil? status)
+        ;; there's no that item
+        :item-uuid-not-found
+        ;; but if exists
+        status))))

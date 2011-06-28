@@ -38,7 +38,19 @@
                           "item" (:item result)})})))
 
   (GET "/queue/:queue/:item-uuid/status" [queue item-uuid]
-    "Not implemented yet")
+    (let [result (qdis.engine.queue/get-status item-uuid)]
+      (if (= result :item-uuid-not-found)
+        {:status 404
+         :headers {"Content-Type" "application/json"}
+         :body (json-str {"queue" queue
+                          "item-uuid" item-uuid
+                          "message" "Item-UUID not found"})}
+         
+        {:status 200
+         :headers {"Content-Type" "application/json"}
+         :body (json-str {"queue" queue
+                          "item-uuid" item-uuid
+                          "status" result})})))
 
   (route/resources "/")
   (route/not-found "Page not found"))

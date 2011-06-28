@@ -17,7 +17,7 @@
   (testing "there's no queues at this point"
     (is [] (qdis.engine.queue/queues)))
 
-  (testing "enqueuing itens"
+  (testing "enqueuing items"
     (is (= "qdis:queue:padoca:uuid:1"
            (qdis.engine.queue/enqueue "padoca" "panguan1")))
     (is (= "qdis:queue:padoca:uuid:2"
@@ -25,7 +25,15 @@
     (is (= "qdis:queue:padoca:uuid:3"
            (qdis.engine.queue/enqueue "padoca" "panguan3"))))
 
-  (testing "dequeuing itens"
+  (testing "getting items' status (enqueued)"
+    (is (= "enqueued"
+           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:1")))
+    (is (= "enqueued"
+           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:2")))
+    (is (= "enqueued"
+           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:3"))))
+
+  (testing "dequeuing items"
     (is (= {:item-uuid "qdis:queue:padoca:uuid:1", :item "panguan1"}
            (qdis.engine.queue/dequeue "padoca")))
     (is (= {:item-uuid "qdis:queue:padoca:uuid:2", :item "panguan2"}
@@ -33,16 +41,24 @@
     (is (= {:item-uuid "qdis:queue:padoca:uuid:3", :item "panguan3"}
            (qdis.engine.queue/dequeue "padoca"))))
 
+  (testing "getting items' status (dequeued)"
+    (is (= "dequeued"
+           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:1")))
+    (is (= "dequeued"
+           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:2")))
+    (is (= "dequeued"
+           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:3"))))
+
   (testing "there's one queue at this point"
     (is ["qdis:queue:padoca"] (qdis.engine.queue/queues)))
   
-  (testing "enqueuing itens in other queue"
+  (testing "enqueuing items in other queue"
     (is (= "qdis:queue:pastelaria:uuid:4"
            (qdis.engine.queue/enqueue "pastelaria" "tosquito1")))
     (is (= "qdis:queue:pastelaria:uuid:5"
            (qdis.engine.queue/enqueue "pastelaria" "tosquito2"))))
 
-  (testing "dequeuing itens from other queue"
+  (testing "dequeuing items from other queue"
     (is (= {:item-uuid "qdis:queue:pastelaria:uuid:4", :item "tosquito1"}
            (qdis.engine.queue/dequeue "pastelaria")))
     (is (= {:item-uuid "qdis:queue:pastelaria:uuid:5", :item "tosquito2"}
