@@ -34,7 +34,7 @@
   ([jedis index] (.select jedis index))
   ([index] (-select *jedis* index)))
 
-(defn -flushdb []
+(defn -flushdb
   ([jedis] (.flushDB jedis))
   ([] (-flushdb *jedis*)))
 
