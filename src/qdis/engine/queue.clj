@@ -79,7 +79,7 @@
                          {:item-uuid item-uuid :item item}))))]
       result)))
 
-(defn get-status [item-uuid]
+(defn get-item-status [item-uuid]
   (qdis.engine.jedis/with-jedis
     (let [status (qdis.engine.jedis/-get (status-for item-uuid))]
       (if (nil? status)

@@ -38,7 +38,7 @@
                           "item" (:item result)})})))
 
   (GET "/queue/:queue/:item-uuid/status" [queue item-uuid]
-    (let [result (qdis.engine.queue/get-status item-uuid)]
+    (let [result (qdis.engine.queue/get-item-status item-uuid)]
       (if (= result :item-uuid-not-found)
         {:status 404
          :headers {"Content-Type" "application/json"}

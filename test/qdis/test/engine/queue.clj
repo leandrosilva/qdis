@@ -27,11 +27,11 @@
 
   (testing "getting items' status (enqueued)"
     (is (= "enqueued"
-           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:1")))
+           (qdis.engine.queue/get-item-status "qdis:queue:padoca:uuid:1")))
     (is (= "enqueued"
-           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:2")))
+           (qdis.engine.queue/get-item-status "qdis:queue:padoca:uuid:2")))
     (is (= "enqueued"
-           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:3"))))
+           (qdis.engine.queue/get-item-status "qdis:queue:padoca:uuid:3"))))
 
   (testing "dequeuing items"
     (is (= {:item-uuid "qdis:queue:padoca:uuid:1", :item "panguan1"}
@@ -43,11 +43,11 @@
 
   (testing "getting items' status (dequeued)"
     (is (= "dequeued"
-           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:1")))
+           (qdis.engine.queue/get-item-status "qdis:queue:padoca:uuid:1")))
     (is (= "dequeued"
-           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:2")))
+           (qdis.engine.queue/get-item-status "qdis:queue:padoca:uuid:2")))
     (is (= "dequeued"
-           (qdis.engine.queue/get-status "qdis:queue:padoca:uuid:3"))))
+           (qdis.engine.queue/get-item-status "qdis:queue:padoca:uuid:3"))))
 
   (testing "there's one queue at this point"
     (is ["qdis:queue:padoca"] (qdis.engine.queue/queues)))
