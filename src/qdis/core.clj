@@ -5,7 +5,7 @@
   (:require qdis.engine.jedis)
   (:require qdis.web.server))
 
-(defn- todo-list []
+(defn- print-todo-list []
   (println (str "\nTODO List:\n"
                 "- implementar os testes usando a lib padrao de testes\n"
                 "- estudar sobre o uso explicito de namespaces\n"
@@ -15,7 +15,7 @@
 ;; running phase
 
 (defn- before-run [config]
-  (todo-list)
+  (print-todo-list)
   (qdis.engine.jedis/initialize-pool (:redis config))
   config)
 
