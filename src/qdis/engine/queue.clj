@@ -5,9 +5,10 @@
 
 ;; settings
 
-(def ^{:private true} queue-names "qdis:queue-names")
-(def ^{:private true} queue-uuid  "qdis:uuid")
-(def ^{:private true} queue-log   "qdis:queue-log")
+(def ^{:private true} global-uuid               "qdis:uuid")
+(def ^{:private true} global-queue-names        "qdis:queue-names")
+(def ^{:private true} global-queue-log-enqueued "qdis:queue-log:enqueued")
+(def ^{:private true} global-queue-log-dequeued "qdis:queue-log:dequeued")
 
 ;; private api
 
@@ -37,15 +38,15 @@
 
 (defn queues []
   (qdis.engine.jedis/with-jedis
-    (qdis.engine.jedis/-smembers queue-names)))
+    (qdis.engine.jedis/-smembers global-queue-names)))
 
 (defn enqueue [queue item]
   (qdis.engine.jedis/with-jedis
     (let [queue-name (tag-for queue)]
       ;; create the queue (if it doesn't exists)
-      (qdis.engine.jedis/-sadd queue-names queue-name)
+      (qdis.engine.jedis/-sadd global-queue-names queue-name)
       ;; get a uuid to this new item
-      (let [item-uuid (tag-for queue-name (qdis.engine.jedis/-incr queue-uuid))]
+      (let [item-uuid (tag-for queue-name (qdis.engine.jedis/-incr global-uuid))]
         ;; bind this uuid to the item's value
         (qdis.engine.jedis/-set item-uuid item)
         ;; bind a status to the item
@@ -55,6 +56,7 @@
         ;; and finally log it
         (qdis.engine.jedis/-set (tag-for-log item-uuid) item)
         (qdis.engine.jedis/-set (status-for-log item-uuid "enqueued") (right-now))
+        (qdis.engine.jedis/-lpush global-queue-log-enqueued item-uuid)
         ;; result
         item-uuid))))
 
@@ -74,7 +76,7 @@
                          (qdis.engine.jedis/-set (status-for item-uuid) "dequeued")
                          ;; and finally log it
                          (qdis.engine.jedis/-set (status-for-log item-uuid "dequeued") (right-now))
-                         (qdis.engine.jedis/-lpush queue-log item-uuid)
+                         (qdis.engine.jedis/-lpush global-queue-log-dequeued item-uuid)
                          ;; result
                          {:item-uuid item-uuid :item item}))))]
       result)))
