@@ -69,3 +69,7 @@
 (defn -smembers
   ([jedis set-key] (.smembers jedis set-key))
   ([set-key] (-smembers *jedis* set-key)))
+
+(defn -keys
+  ([jedis pattern] (.keys jedis pattern))
+  ([pattern] (-keys *jedis* pattern)))
