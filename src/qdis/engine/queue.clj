@@ -45,7 +45,7 @@
         ;; bind a status to item
         (qdis.engine.jedis/-set (status-for item-uuid) "enqueued")
         (qdis.engine.jedis/-set (status-for item-uuid "enqueued") (right-now))
-        ;; and finqueuesy push item's uuid to queue
+        ;; and finally push item's uuid to queue
         (qdis.engine.jedis/-lpush queue-name item-uuid)
         ;; result
         item-uuid))))
@@ -65,7 +65,7 @@
                          ;; bind a status to it
                          (qdis.engine.jedis/-set (status-for item-uuid) "dequeued")
                          (qdis.engine.jedis/-set (status-for item-uuid "dequeued") (right-now))
-                         ;; and finqueuesy push item in history queue
+                         ;; and finally push item in history queue
                          (qdis.engine.jedis/-lpush queue-history item-uuid)
                          ;; result
                          {:item-uuid item-uuid :item item}))))]
