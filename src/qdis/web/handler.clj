@@ -37,7 +37,7 @@
                           "item-uuid" (:item-uuid result)
                           "item" (:item result)})})))
 
-  (GET "/queue/:queue/history/dequeue" [queue]
+  (GET "/queue/:queue/log/dequeue" [queue]
     "Not implemented yet")
 
   (GET "/queue/:queue/:item-uuid/status" [queue item-uuid]
