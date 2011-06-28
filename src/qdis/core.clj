@@ -7,9 +7,7 @@
 
 (defn- print-todo-list []
   (println (str "\nTODO List:\n"
-                "- implementar os testes usando a lib padrao de testes\n"
                 "- estudar sobre o uso explicito de namespaces\n"
-                "- trabalhar o handler para ficar REST-like\n"
                 "- trabalhar o wrap-reload so em dev mode\n")))
 
 ;; running phase
