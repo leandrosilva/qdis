@@ -78,33 +78,3 @@
                          ;; result
                          {:item-uuid item-uuid :item item}))))]
       result)))
-        
-;; tests
-
-(defn run-tests []
-  (qdis.engine.jedis/initialize-pool {:host "127.0.0.1" :port 6379})
-
-  (println "\n::: running test functions :::\n")
-
-  (println "TEST 1   (queues) ="                      (queues))
-
-  (println "\n---\n")
-
-  (println "TEST 1   (enqueue 'padoca' 'panguan') ="  (enqueue "padoca" "panguan"))
-  (println "TEST 2   (dequeue 'padocax') ="           (dequeue "padocax"))
-  (println "TEST 3   (dequeue 'padoca') ="            (dequeue "padoca"))
-
-  (println)
-
-  (println "TEST 4.1 (enqueue 'padoca' 'panguan1') =" (enqueue "padoca" "panguan1"))
-  (println "TEST 4.2 (enqueue 'padoca' 'panguan2') =" (enqueue "padoca" "panguan2"))
-  (println "TEST 4.3 (enqueue 'padoca' 'panguan3') =" (enqueue "padoca" "panguan3"))
-  (println "TEST 4.4 (dequeue 'padoca') ="            (dequeue "padoca"))
-  (println "TEST 4.5 (dequeue 'padoca') ="            (dequeue "padoca"))
-  (println "TEST 4.6 (dequeue 'padoca') ="            (dequeue "padoca"))
-
-  (println)
-  
-  (qdis.engine.jedis/finalize-pool)
-  
-  :ok)
