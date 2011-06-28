@@ -15,12 +15,9 @@
      :headers {"Content-Type" "application/json"}
      :body (json-str {"queues" (qdis.engine.queue/queues)})})
 
-  (GET "/queues/history" []
+  (GET "/queue/:queue/info" [queue]
     "Not implemented yet")
 
-  (GET "/queue/:queue" [queue]
-    "Not implemented yet")
-  
   (POST "/queue/:queue/enqueue" [queue item]
     (let [item-uuid (qdis.engine.queue/enqueue queue item)]
       {:status 200
