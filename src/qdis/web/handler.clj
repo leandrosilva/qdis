@@ -17,7 +17,7 @@
 
   (POST "/queue/:queue/enqueue" [queue item]
     (let [item-uuid (qdis.engine.queue/enqueue queue item)]
-      {:status 200
+      {:status 201
        :headers {"Content-Type" "application/json"
                  "Location" (str "/queue/" queue "/" item-uuid "/status")}
        :body (json-str {"queue" queue
