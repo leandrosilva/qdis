@@ -4,3 +4,7 @@ lib
 classes
 .DS_Store
 db
+dum.rdb
+.lein-deps-sum
+.lein-failures
+.lein-plugins/
