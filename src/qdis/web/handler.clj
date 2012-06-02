@@ -1,7 +1,6 @@
 (ns qdis.web.handler
-  (:use [clojure.contrib.json :only (json-str)])
+  (:use [clojure.data.json :only (json-str)])
   (:use compojure.core)
-  (:use ring.middleware.reload)
   (:use ring.middleware.stacktrace)
   (:require qdis.engine.queue)
   (:require [compojure.route :as route]
@@ -57,5 +56,4 @@
 
 (def app
   (-> (handler/site main-routes)
-      (wrap-reload '[qdis.web.handler]) ; should be use only in development mode
       (wrap-stacktrace)))

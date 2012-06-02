@@ -9,8 +9,7 @@
   (println (str "\nTODO List:\n"
                 "- adicionar log\n"
                 "- criar listeners para as filas de log\n"
-                "- estudar sobre o uso explicito de namespaces\n"
-                "- trabalhar o wrap-reload so em dev mode\n")))
+                "- estudar sobre o uso explicito de namespaces\n")))
 
 ;; running phase
 

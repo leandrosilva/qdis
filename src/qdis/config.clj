@@ -1,7 +1,7 @@
 (ns qdis.config)
 
-(defonce ^{:private true} *info* (ref nil))
-(defonce ^{:private true} *environment* (ref nil))
+(defonce ^{:private true} ^:dynamic *info* (ref nil))
+(defonce ^{:private true} ^:dynamic *environment* (ref nil))
 
 (defn setup [env]
   (dosync

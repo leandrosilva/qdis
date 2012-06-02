@@ -2,7 +2,7 @@
   (:import [redis.clients.jedis Jedis JedisPool]))
 
 ;; use a jedis connection pool to be thread safe
-(def ^{:private true} *jedis-pool* (ref nil))
+(def ^{:private true} ^:dynamic *jedis-pool* (ref nil))
 
 (defn initialize-pool [redis-config]
   (dosync
@@ -21,7 +21,7 @@
 
 ;; redis-like api
 
-(def *jedis*)
+(def ^:dynamic *jedis*)
 
 (defmacro with-jedis [& exprs]
   `(do
@@ -51,16 +51,16 @@
  ([key] (.del *jedis* (into-array [key]))))
 
 (defn -sadd
- ([jedis set-key value] (.sadd jedis set-key value))
- ([set-key value] (-sadd *jedis* set-key value)))
+ ([jedis set-key value] (.sadd jedis set-key (into-array [value])))
+ ([set-key value] (.sadd *jedis* set-key (into-array [value]))))
 
 (defn -incr
  ([jedis key] (.incr jedis key))
  ([key] (-incr *jedis* key)))
 
 (defn -lpush
- ([jedis list-key value] (.lpush jedis list-key value))
- ([list-key value] (-lpush *jedis* list-key value)))
+ ([jedis list-key value] (.lpush jedis list-key (into-array [value])))
+ ([list-key value] (.lpush *jedis* list-key (into-array [value]))))
 
 (defn -rpop
  ([jedis list-key] (.rpop jedis list-key))
