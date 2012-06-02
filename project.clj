@@ -11,5 +11,5 @@
     [[ring/ring-devel "1.1.0"]]
   :plugins
     [[lein-ring "0.7.1"]]
-  :ring {:handler qdis.web/app})
+  :ring {:handler qdis.web.handler/app})
   
