@@ -1,6 +1,6 @@
 # qdis
 
-Qdis is a WIP for a message-oriented middleware which provides a Web API and is back-ended by Redis.
+Qdis is a WIP for a message-oriented middleware which provides a Web API and is back-ended by Redis. Of course, today it is nothing serious, it is just a playground to relax and try Clojure a little bit, which definetely is lot of fun.
 
 ## Install
 
