@@ -44,6 +44,6 @@ If you want to try a different configuration based on a given runtime environmen
 
 ## License
 
-Copyright (C) 2010 FIXME
+Copyright (C) 2011 Leandro Silva (CødeZøne)
 
 Distributed under the Eclipse Public License, the same as Clojure.
